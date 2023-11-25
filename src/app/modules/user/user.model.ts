@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { TAddress, TFullName, TUser, UserModel } from './user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrder,
+  TUser,
+  UserModel,
+} from './user.interface';
 
 import bcrypt from 'bcrypt';
 import config from '../../config';
@@ -19,6 +25,24 @@ const addressSchema = new Schema<TAddress>({
   country: { type: String, required: [true, 'Country is required'] },
 });
 
+const orderSchema = new Schema<TOrder>({
+  productName: {
+    type: String,
+    required: [true, 'Product name is required'],
+    minlength: [1, 'Product name must have at least 1 character'],
+  },
+  price: {
+    type: Number,
+    required: [true, 'Price is required'],
+    min: [1, 'Price must be at least 1'],
+  },
+  quantity: {
+    type: Number,
+    required: [true, 'Quantity is required'],
+    min: [1, 'Quantity must be at least 1'],
+  },
+});
+
 const userSchema = new Schema<TUser>(
   {
     userId: { type: Number, unique: true },
@@ -28,7 +52,10 @@ const userSchema = new Schema<TUser>(
       required: [true, 'Password is required.'],
       maxlength: [20, 'Password can not be more than 20 characters'],
     },
-    fullName: { type: fullNameSchema, required: [true, 'Full name is required'] },
+    fullName: {
+      type: fullNameSchema,
+      required: [true, 'Full name is required'],
+    },
     age: { type: Number, required: [true, 'Age is required'] },
     email: { type: String, required: [true, 'Email is required'] },
     isActive: {
@@ -41,7 +68,7 @@ const userSchema = new Schema<TUser>(
       required: [true, 'hobbies is required'],
     },
     address: { type: addressSchema, required: [true, 'Address is required'] },
-
+    orders: orderSchema,
     isDeleted: {
       type: Boolean,
       default: false,
@@ -99,20 +126,9 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
-// For static methods
-
 userSchema.statics.isUserExists = async function (id: number) {
-  const existingUser = await User.findOne({ id });
+  const existingUser = await User.findOne({ userId:id });
   return existingUser;
 };
 
 export const User = model<TUser, UserModel>('User', userSchema);
-
-// For instance method
-
-// userSchema.methods.isUserExists = async function (id: string) {
-//   const existingUser = await User.findOne({ id });
-//   return existingUser;
-// };
-
-// export const User = model<TUser, UserModel>('User', userSchema);

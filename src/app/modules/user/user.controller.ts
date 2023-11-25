@@ -5,6 +5,7 @@ import {
   deleteUserFromDb,
   getSingleUserFromDb,
   getUsersFromDb,
+  updateOrdersIntoDb,
   updateUserIntoDb,
 } from './user.service';
 import UserValidationSchema from './user.validation';
@@ -85,6 +86,25 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const newOrder = req.body
+    const result = await updateOrdersIntoDb(Number(userId),newOrder);
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong!',
+      error: error,
+    });
+  }
+};
+
 
 const deleteUser = async (req: Request, res: Response) => {
   try {
@@ -104,4 +124,4 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export { createUser, getUsers, getSingleUser, updateUser, deleteUser };
+export { createUser, getUsers, getSingleUser, updateUser,updateOrders, deleteUser };

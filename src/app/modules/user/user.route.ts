@@ -4,6 +4,7 @@ import {
   deleteUser,
   getSingleUser,
   getUsers,
+  updateOrders,
   updateUser,
 } from './user.controller';
 
@@ -16,6 +17,8 @@ router.get('/:userId', getSingleUser);
 router.get('/', getUsers);
 
 router.put('/:userId', updateUser);
+
+router.put('/:userId/orders', updateOrders);
 
 router.delete('/:userId', deleteUser);
 
