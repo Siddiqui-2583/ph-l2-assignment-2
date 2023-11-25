@@ -24,8 +24,8 @@ router.delete('/:userId', deleteUser);
 
 router.put('/:userId/orders', updateOrders);
 
-router.get('/:userId/orders', getOrders);
-
 router.get('/:userId/orders/total-price', calculateTotalPriceOfOrders);
+
+router.get('/:userId/orders', getOrders);
 
 export default router;
