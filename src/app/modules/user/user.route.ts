@@ -1,7 +1,9 @@
 import express from 'express';
 import {
+  calculateTotalPriceOfOrders,
   createUser,
   deleteUser,
+  getOrders,
   getSingleUser,
   getUsers,
   updateOrders,
@@ -18,8 +20,12 @@ router.get('/', getUsers);
 
 router.put('/:userId', updateUser);
 
+router.delete('/:userId', deleteUser);
+
 router.put('/:userId/orders', updateOrders);
 
-router.delete('/:userId', deleteUser);
+router.get('/:userId/orders', getOrders);
+
+router.get('/:userId/orders/total-price', calculateTotalPriceOfOrders);
 
 export default router;

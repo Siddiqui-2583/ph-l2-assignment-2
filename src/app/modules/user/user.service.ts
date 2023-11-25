@@ -30,6 +30,11 @@ const updateUserIntoDb = async (userId: number, updatedUser: TUser) => {
   }
 };
 
+const deleteUserFromDb = async (userId: number) => {
+  const result = await User.updateOne({ userId }, { isDeleted: true });
+  return result;
+};
+
 const updateOrdersIntoDb = async (userId: number, newOrder: TOrder) => {
   if (await User.isUserExists(userId)) {
     const user = await User.findOne({ userId });
@@ -58,10 +63,48 @@ const updateOrdersIntoDb = async (userId: number, newOrder: TOrder) => {
   }
 };
 
-const deleteUserFromDb = async (userId: number) => {
-  const result = await User.updateOne({ userId }, { isDeleted: true });
-  return result;
+const getOrdersFromDb = async (userId: number) => {
+  if (await User.isUserExists(userId)) {
+    const user = await User.findOne({ userId });
+
+    if (user) {
+
+      if (user.orders && Array.isArray(user.orders) && user.orders.length > 0) {
+        return user.orders;
+      } else {
+        return null
+      }
+    } else {
+      throw new Error('User not found!');
+    }
+  } else {
+    throw new Error('User does not exist!');
+  }
 };
+
+const calculateTotalPriceOfOrdersInDb = async (userId: number) => {
+  if (await User.isUserExists(userId)) {
+    const result = await User.aggregate([
+      {$match:{userId: userId}},
+      {$unwind: "$orders"},
+      {
+        $group:{
+          _id:null,
+          totalPrice:{$sum:"$orders.price"}
+        }
+      }
+    ])
+
+    const totalPrice = result.length > 0 ? result[0].totalPrice : 0
+
+    return {totalPrice}
+  } else {
+    throw new Error('User does not exist!');
+  }
+};
+
+
+
 
 export {
   createUserIntoDb,
@@ -69,5 +112,5 @@ export {
   getSingleUserFromDb,
   updateUserIntoDb,
   updateOrdersIntoDb,
-  getUsersFromDb,
+  getUsersFromDb,getOrdersFromDb,calculateTotalPriceOfOrdersInDb
 };

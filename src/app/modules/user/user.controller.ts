@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import {
+  calculateTotalPriceOfOrdersInDb,
   createUserIntoDb,
   deleteUserFromDb,
+  getOrdersFromDb,
   getSingleUserFromDb,
   getUsersFromDb,
   updateOrdersIntoDb,
@@ -86,6 +88,24 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await deleteUserFromDb(Number(userId));
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong!',
+      error: error,
+    });
+  }
+};
+
 const updateOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -105,14 +125,14 @@ const updateOrders = async (req: Request, res: Response) => {
   }
 };
 
-
-const deleteUser = async (req: Request, res: Response) => {
+const getOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const result = await deleteUserFromDb(Number(userId));
+
+    const result = await getOrdersFromDb(Number(userId));
     res.status(200).json({
       success: true,
-      message: 'User deleted successfully!',
+      message: 'Order fetched successfully!',
       data: result,
     });
   } catch (error: any) {
@@ -124,4 +144,28 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export { createUser, getUsers, getSingleUser, updateUser,updateOrders, deleteUser };
+const calculateTotalPriceOfOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await calculateTotalPriceOfOrdersInDb(Number(userId));
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong!',
+      error: error,
+    });
+  }
+};
+
+
+
+
+
+
+export { createUser, getUsers, getSingleUser, updateUser,updateOrders, deleteUser,getOrders ,calculateTotalPriceOfOrders };
