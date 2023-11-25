@@ -16,7 +16,7 @@ const getUsersFromDb = async () => {
 };
 
 const getSingleUserFromDb = async (userId: number) => {
-  const result = await User.find({ userId });
+  const result = await User.findOne({ userId });
   return result;
 };
 
@@ -31,15 +31,30 @@ const updateUserIntoDb = async (userId: number, updatedUser: TUser) => {
 };
 
 const updateOrdersIntoDb = async (userId: number, newOrder: TOrder) => {
-  console.log('user',userId,newOrder)
   if (await User.isUserExists(userId)) {
-    const user = await User.find({ userId });
-    console.log('user inside',user,newOrder)
-    // await User.updateOne({ userId }, updatedUser);
-    
-    // return result;
+    const user = await User.findOne({ userId });
+
+    if (user) {
+      let updatedUser: TUser;
+
+      if (user.orders && Array.isArray(user.orders)) {
+        const previousOrders = user.orders;
+        updatedUser = {
+          ...user.toObject(),
+          orders: [...previousOrders, newOrder],
+        };
+      } else {
+        updatedUser = { ...user.toObject(), orders: [newOrder] };
+      }
+
+      const result = await User.updateOne({ userId }, updatedUser);
+      // const result = await User.findOne({ userId });
+      return result;
+    } else {
+      throw new Error('User not found!');
+    }
   } else {
-    throw new Error('User doess not exist!');
+    throw new Error('User does not exist!');
   }
 };
 
@@ -52,6 +67,7 @@ export {
   createUserIntoDb,
   deleteUserFromDb,
   getSingleUserFromDb,
-  updateUserIntoDb,updateOrdersIntoDb,
+  updateUserIntoDb,
+  updateOrdersIntoDb,
   getUsersFromDb,
 };

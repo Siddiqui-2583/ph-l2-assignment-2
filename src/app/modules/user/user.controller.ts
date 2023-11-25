@@ -90,11 +90,11 @@ const updateOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const newOrder = req.body
-    const result = await updateOrdersIntoDb(Number(userId),newOrder);
+    await updateOrdersIntoDb(Number(userId),newOrder);
     res.status(200).json({
       success: true,
-      message: 'User updated successfully!',
-      data: result,
+      message: 'Order created successfully!',
+      data: null,
     });
   } catch (error: any) {
     res.status(500).json({

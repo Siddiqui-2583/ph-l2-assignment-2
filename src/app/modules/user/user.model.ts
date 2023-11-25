@@ -68,7 +68,7 @@ const userSchema = new Schema<TUser>(
       required: [true, 'hobbies is required'],
     },
     address: { type: addressSchema, required: [true, 'Address is required'] },
-    orders: orderSchema,
+    orders: [orderSchema],
     isDeleted: {
       type: Boolean,
       default: false,
@@ -90,7 +90,7 @@ const userSchema = new Schema<TUser>(
 // pre save middleware
 
 userSchema.pre('save', async function (next) {
-  console.log('Pre save', this);
+  // console.log('Pre save', this);
   const user = this;
   user.password = await bcrypt.hash(
     user.password,
