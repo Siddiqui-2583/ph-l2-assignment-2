@@ -2,7 +2,6 @@ import { TUser } from './user.interface';
 import { User } from './user.model';
 
 const createUserIntoDb = async (userData: TUser) => {
-  //   const user = new User(userData);
   if (await User.isUserExists(userData.userId)) {
     throw new Error('User already exists!');
   } else {
@@ -15,12 +14,24 @@ const getUsersFromDb = async () => {
   const result = await User.find().select('-password');
   return result;
 };
-const getSingleUserFromDb = async (id: string) => {
-  const result = await User.find({ id });
+
+const getSingleUserFromDb = async (userId: number) => {
+  const result = await User.find({ userId });
   return result;
 };
-const deleteUserFromDb = async (id: string) => {
-  const result = await User.updateOne({ id }, { isDeleted: true });
+
+const updateUserIntoDb = async (userId: number, updatedUser: TUser) => {
+  if (await User.isUserExists(userId)) {
+    await User.updateOne({ userId }, updatedUser);
+    const result = await User.find({ userId });
+    return result;
+  } else {
+    throw new Error('User doess not exist!');
+  }
+};
+
+const deleteUserFromDb = async (userId: number) => {
+  const result = await User.updateOne({ userId }, { isDeleted: true });
   return result;
 };
 
@@ -28,5 +39,6 @@ export {
   createUserIntoDb,
   deleteUserFromDb,
   getSingleUserFromDb,
+  updateUserIntoDb,
   getUsersFromDb,
 };
