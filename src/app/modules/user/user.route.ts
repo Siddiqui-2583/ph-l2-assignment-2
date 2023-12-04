@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.post('/create', createUser);
+router.post('/', createUser);
 
 router.get('/:userId', getSingleUser);
 
